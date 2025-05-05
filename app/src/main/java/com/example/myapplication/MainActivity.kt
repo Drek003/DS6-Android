@@ -22,14 +22,25 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                LoginScreen()
+                AppContent()
             }
         }
     }
 }
 
 @Composable
-fun LoginScreen() {
+fun AppContent() {
+    var isLoggedIn by remember { mutableStateOf(false) }
+
+    if (isLoggedIn) {
+        DashboardScreen()
+    } else {
+        LoginScreen(onLoginSuccess = { isLoggedIn = true })
+    }
+}
+
+@Composable
+fun LoginScreen(onLoginSuccess: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -87,7 +98,7 @@ fun LoginScreen() {
                 onClick = {
                     coroutineScope.launch {
                         if (email == "admin" && password == "123") {
-                            snackbarHostState.showSnackbar("Inicio de sesión exitoso")
+                            onLoginSuccess()
                         } else {
                             snackbarHostState.showSnackbar("Correo o contraseña incorrectos")
                         }
@@ -112,6 +123,6 @@ fun LoginScreen() {
 @Composable
 fun LoginScreenPreview() {
     MyApplicationTheme {
-        LoginScreen()
+        LoginScreen(onLoginSuccess = {})
     }
 }
